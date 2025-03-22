@@ -53,7 +53,7 @@ class HTTPServer:
                     "<body>"
                     "<div class='container'>"
                     "<h1>Teleshare</h1>"
-                    "<p><a href='https://github.com/zawsq/Teleshare' target='_blank'>Visit the Teleshare GitHub Repository</a></p>"  # noqa: E501
+                    "<p><a href='https://github.com/AlekBaikHati/pidama-b-o-w' target='_blank'>Visit the Teleshare GitHub Repository</a></p>"  # noqa: E501
                     "</div>"
                     "</body>"
                     "</html>"
