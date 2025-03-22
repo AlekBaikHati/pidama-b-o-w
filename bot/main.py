@@ -9,6 +9,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 import threading
 from bot.utilities.http_server import run_http_server
 import telegram
+import time  # Tambahkan import ini di bagian atas
 
 # Muat variabel lingkungan dari .env
 load_dotenv()
@@ -32,6 +33,9 @@ nest_asyncio.apply()
 # Variabel status untuk mode operasi dan mode penerusan
 mode_auto = False  # Default ke mode auto
 mode_remof = False # Default ke mode penanda
+
+# Variabel global untuk menyimpan waktu saat bot dimulai
+start_time = time.time()
 
 # Fungsi untuk memeriksa otorisasi
 def is_authorized(user):
@@ -363,6 +367,30 @@ def start_http_server():
     server_thread.daemon = True
     server_thread.start()
 
+# Fungsi untuk menghitung uptime dan waktu sejak bot dimulai, serta mengukur waktu ping
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # Hapus pengecekan otorisasi agar semua pengguna bisa menggunakan command ini
+    # if not is_authorized(update.effective_user):
+    #     await update.message.reply_text('Anda tidak diizinkan untuk menggunakan bot ini.')
+    #     return
+
+    # Hitung uptime
+    current_time = time.time()
+    uptime_seconds = int(current_time - start_time)
+    uptime_str = time.strftime("%H:%M:%S", time.gmtime(uptime_seconds))
+
+    # Hitung waktu ping
+    start_time_ping = time.time()
+    ping_message = await update.message.reply_text("Pong... 🏓")
+    ping_time = (time.time() - start_time_ping) * 1000  # Hitung waktu ping dalam milidetik
+
+    # Edit pesan untuk menampilkan hasil uptime dan ping
+    await ping_message.edit_text(
+        f"Ping: {ping_time:.2f} ms\n"
+        f"Bot Uptime: {uptime_str}\n"
+        f"Time Since Start: {uptime_seconds} detik\n"
+    )
+
 async def main() -> None:
     # Mulai server HTTP
     start_http_server()
@@ -372,6 +400,7 @@ async def main() -> None:
     application.add_handler(CommandHandler("settings", settings))
     application.add_handler(CommandHandler("list", list_channels))
     application.add_handler(CommandHandler("list2", list_channels_no_photo))
+    application.add_handler(CommandHandler("stats", stats))  # Handler untuk /stats
     application.add_handler(MessageHandler(filters.ALL, forward_post))
     application.add_handler(CallbackQueryHandler(button))
     logger.info("Bot dimulai dan siap menerima pesan.")
