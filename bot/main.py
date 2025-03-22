@@ -8,6 +8,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 import threading
 from bot.utilities.http_server import run_http_server
+import telegram
 
 # Muat variabel lingkungan dari .env
 load_dotenv()
@@ -156,33 +157,65 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     data = query.data
 
+    # Menjawab callback query dengan alert jika mode sudah aktif
     if data == 'set_auto':
-        mode_auto = True
-        mode_remof = False
-        await query.answer(text="Mode diubah ke AUTO.✨", show_alert=True)
+        if mode_auto:
+            await query.answer(text="Mode AUTO sudah aktif.✨", show_alert=True)
+        else:
+            mode_auto = True
+            mode_remof = False  # Pastikan mode REMOV dinonaktifkan saat beralih ke AUTO
+            await query.answer(text="Mode diubah ke AUTO.✨", show_alert=True)
+            new_text = 's\n\n' + await get_active_mode_text()
+            if query.message:
+                try:
+                    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                except telegram.error.BadRequest as e:
+                    logger.error(f"Failed to edit message: {e}")
     elif data == 'set_manual':
-        mode_auto = False
-        await query.answer(text="Mode diubah ke MANUAL.✨", show_alert=True)
+        if not mode_auto:
+            await query.answer(text="Mode MANUAL sudah aktif.✨", show_alert=True)
+        else:
+            mode_auto = False  # Ubah ke mode manual
+            await query.answer(text="Mode diubah ke MANUAL.✨", show_alert=True)
+            new_text = 's\n\n' + await get_active_mode_text()
+            if query.message:
+                try:
+                    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                except telegram.error.BadRequest as e:
+                    logger.error(f"Failed to edit message: {e}")
     elif data == 'set_penanda':
-        mode_remof = False
-        await query.answer(text="Mode diubah ke WITH TAG.✨", show_alert=True)
+        if not mode_remof:
+            await query.answer(text="Mode WITH TAG sudah aktif.✨", show_alert=True)
+        else:
+            mode_remof = False  # Ubah ke mode penanda
+            await query.answer(text="Mode diubah ke WITH TAG.✨", show_alert=True)
+            new_text = 's\n\n' + await get_active_mode_text()
+            if query.message:
+                try:
+                    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                except telegram.error.BadRequest as e:
+                    logger.error(f"Failed to edit message: {e}")
     elif data == 'set_remov':
-        mode_remof = True
-        await query.answer(text="Mode diubah ke REMOVE TAG.✨", show_alert=True)
+        if mode_remof:
+            await query.answer(text="Mode REMOVE TAG sudah aktif.✨", show_alert=True)
+        else:
+            mode_remof = True  # Ubah ke mode REMOV
+            await query.answer(text="Mode diubah ke REMOVE TAG.✨", show_alert=True)
+            new_text = 's\n\n' + await get_active_mode_text()
+            if query.message:
+                try:
+                    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                except telegram.error.BadRequest as e:
+                    logger.error(f"Failed to edit message: {e}")
     elif data == 'close':
         await query.message.delete()
         return
     elif data.startswith('confirm_forward:'):
+        # Panggil fungsi untuk meneruskan pesan
         await confirm_forward(update, context)
     elif data == 'cancel_forward':
+        # Hapus pesan konfirmasi
         await cancel_forward(update, context)
-
-    # Edit pesan untuk menampilkan mode aktif yang baru
-    new_text = await get_active_mode_text()
-    if query.message.caption:  # Pastikan pesan memiliki caption
-        await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
-    else:
-        await query.message.edit_text(new_text, reply_markup=await create_mode_keyboard())
 
 # Fungsi untuk menangani konfirmasi meneruskan pesan
 async def confirm_forward(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -213,7 +246,9 @@ async def confirm_forward(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     if error_channels:
         summary_message += f"Gagal meneruskan ke: {', '.join(error_channels)}"
 
-    await status_message.edit_text(summary_message)
+    # Pastikan status_message tidak None sebelum mengedit
+    if status_message:
+        await status_message.edit_text(summary_message)
     await query.message.delete()
 
 # Fungsi untuk menangani pembatalan
@@ -336,4 +371,3 @@ if __name__ == '__main__':
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Bot dihentikan oleh pengguna.")
-
