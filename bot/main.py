@@ -6,6 +6,8 @@ import nest_asyncio
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
+import threading
+from utilities.http_server import run_http_server
 
 # Muat variabel lingkungan dari .env
 load_dotenv()
@@ -177,7 +179,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     # Edit pesan untuk menampilkan mode aktif yang baru
     new_text = await get_active_mode_text()
-    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+    if query.message.caption:  # Pastikan pesan memiliki caption
+        await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+    else:
+        await query.message.edit_text(new_text, reply_markup=await create_mode_keyboard())
 
 # Fungsi untuk menangani konfirmasi meneruskan pesan
 async def confirm_forward(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -305,7 +310,16 @@ async def list_channels_no_photo(update: Update, context: ContextTypes.DEFAULT_T
     await status_message.delete()  # Hapus pesan loading setelah selesai
     await update.message.reply_text(f'Daftar channel tanpa foto berhasil dimuat. Total channel: {total_channels}.', quote=True)  # Tambahkan pesan sukses
 
+# Fungsi untuk menjalankan server HTTP di thread terpisah
+def start_http_server():
+    server_thread = threading.Thread(target=run_http_server)
+    server_thread.daemon = True
+    server_thread.start()
+
 async def main() -> None:
+    # Mulai server HTTP
+    start_http_server()
+
     application = Application.builder().token(API_TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("settings", settings))
