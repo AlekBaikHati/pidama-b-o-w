@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 import threading
-from utilities.http_server import run_http_server
+from bot.utilities.http_server import run_http_server
 
 # Muat variabel lingkungan dari .env
 load_dotenv()
