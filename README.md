@@ -29,7 +29,7 @@ Pastikan untuk mengganti nilai di atas dengan informasi yang sesuai untuk bot An
 
 ### Koyeb Deployment
 
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/AlekBaikHati/pidama-b-o-w&branch=main&name=BOT_FORWARD_TG&env%5BAPI_TOKEN%5D=your_api_token&env%5BAPI_ID%5D=your_api_id&env%5BAPI_HASH%5D=your_api_hash&env%5BTARGET%5D=-1002412629469,-1002292422802&env%5BADMIN%5D=wiburich,Ghsd77,blalil_girl)
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/AlekBaikHati/pidama-b-o-w&branch=main&name=BotForwardTG&env%5BAPI_TOKEN%5D=your_api_token&env%5BAPI_ID%5D=your_api_id&env%5BAPI_HASH%5D=your_api_hash&env%5BTARGET%5D=-1002412629469,-1002292422802&env%5BADMIN%5D=wiburich,Ghsd77,blalil_girl)
 
 Just set up the environment variables and you're done.
 
