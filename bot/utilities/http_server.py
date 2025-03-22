@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer as BaseHTTPServer, BaseHTTPRequestHandler
 
 
 class HTTPServer:
@@ -88,11 +88,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 def run_http_server():
     server_address = ('', 8000)
-    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+    httpd = BaseHTTPServer(server_address, SimpleHTTPRequestHandler)
     httpd.serve_forever()
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    server = HTTPServer("127.0.0.1", 8080)
-    asyncio.run(server.run_server())
+    run_http_server()
