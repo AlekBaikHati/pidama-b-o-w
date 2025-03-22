@@ -198,7 +198,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             new_text = 's\n\n' + await get_active_mode_text()
             if query.message:
                 try:
-                    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                    if query.message.caption:
+                        await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                    else:
+                        await query.message.edit_text(new_text, reply_markup=await create_mode_keyboard())
                 except telegram.error.BadRequest as e:
                     logger.error(f"Failed to edit message: {e}")
     elif data == 'set_remov':
@@ -210,7 +213,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             new_text = 's\n\n' + await get_active_mode_text()
             if query.message:
                 try:
-                    await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                    if query.message.caption:
+                        await query.message.edit_caption(new_text, reply_markup=await create_mode_keyboard())
+                    else:
+                        await query.message.edit_text(new_text, reply_markup=await create_mode_keyboard())
                 except telegram.error.BadRequest as e:
                     logger.error(f"Failed to edit message: {e}")
     elif data == 'close':
