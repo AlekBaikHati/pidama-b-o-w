@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 class HTTPServer:
@@ -76,6 +77,19 @@ class HTTPServer:
         self.logger.info("Serving on %s:%d", self.host, self.port)
         async with server:
             await server.serve_forever()
+
+
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'Health check passed!')
+
+
+def run_http_server():
+    server_address = ('', 8000)
+    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+    httpd.serve_forever()
 
 
 if __name__ == "__main__":
