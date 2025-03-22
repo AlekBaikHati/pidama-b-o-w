@@ -85,6 +85,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b'Health check passed!')
 
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+
 
 def run_http_server():
     server_address = ('', 8000)
