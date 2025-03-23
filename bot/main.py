@@ -60,7 +60,7 @@ async def settings(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     # Kirim pesan baru untuk memilih mode
-    await update.message.reply_text('Gunakan tombol di bawah untuk mengatur mode.', reply_markup=await create_mode_keyboard())
+    #await update.message.reply_text('Gunakan tombol di bawah untuk mengatur mode.', reply_markup=await create_mode_keyboard())
 
 # Fungsi untuk mendapatkan teks mode aktif
 async def get_active_mode_text() -> str:
@@ -76,6 +76,10 @@ async def get_active_mode_text() -> str:
         active_mode.append("✅ WITH TAG")
 
     return "Active Mode:\n" + "\n".join(active_mode)
+    
+    # Kirim pesan baru untuk memilih mode
+ text = 'Gunakan tombol di bawah untuk mengatur mode\n\n' + await get_active_mode_text()
+ await update.message.reply_text(text, reply_markup=await create_mode_keyboard())
 
 # Fungsi untuk membuat keyboard mode
 async def create_mode_keyboard() -> InlineKeyboardMarkup:
@@ -172,7 +176,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             mode_auto = True
             mode_remof = False  # Pastikan mode REMOV dinonaktifkan saat beralih ke AUTO
             await query.answer(text="Mode diubah ke AUTO.✨", show_alert=True)
-            new_text = 's\n\n' + await get_active_mode_text()
+            new_text = 'Gunakan tombol di bawah untuk mengatur mode\n\n' + await get_active_mode_text()
             if query.message:
                 try:
                     if query.message.caption:
