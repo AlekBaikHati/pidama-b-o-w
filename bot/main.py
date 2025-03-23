@@ -117,7 +117,10 @@ async def forward_post_auto(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         return
 
     action = "pengcopyan" if mode_remof else "penerusan"
-    status_message = await message.reply_text(f'Memulai {action} pesan...')
+    status_message = await message.reply_text(
+        f'Memulai {action} pesan...',
+        reply_to_message_id=message.message_id
+    )
     error_channels = []
     success_channels = []
     total_channels = len(TARGET)
@@ -184,7 +187,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             mode_auto = False  # Ubah ke mode manual
             await query.answer(text="Mode diubah ke MANUAL.✨", show_alert=True)
-            new_text = 's\n\n' + await get_active_mode_text()
+            new_text = 'Gunakan tombol di bawah untuk mengatur mode.\n\n' + await get_active_mode_text()
             if query.message:
                 try:
                     if query.message.caption:
@@ -199,7 +202,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             mode_remof = False  # Ubah ke mode penanda
             await query.answer(text="Mode diubah ke WITH TAG.✨", show_alert=True)
-            new_text = 's\n\n' + await get_active_mode_text()
+            new_text = 'Gunakan tombol di bawah untuk mengatur mode.\n\n' + await get_active_mode_text()
             if query.message:
                 try:
                     if query.message.caption:
@@ -214,7 +217,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         else:
             mode_remof = True  # Ubah ke mode REMOV
             await query.answer(text="Mode diubah ke REMOVE TAG.✨", show_alert=True)
-            new_text = 's\n\n' + await get_active_mode_text()
+            new_text = 'Gunakan tombol di bawah untuk mengatur mode.\n\n' + await get_active_mode_text()
             if query.message:
                 try:
                     if query.message.caption:
@@ -240,7 +243,10 @@ async def confirm_forward(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     message_id = int(data[1])
 
     action = "pengcopyan" if mode_remof else "penerusan"
-    status_message = await query.message.reply_text(f'Memulai {action} pesan...')
+    status_message = await query.message.reply_text(
+        f'Memulai {action} pesan...',
+        reply_to_message_id=query.message.message_id
+    )
     error_channels = []
     success_channels = []
     total_channels = len(TARGET)
